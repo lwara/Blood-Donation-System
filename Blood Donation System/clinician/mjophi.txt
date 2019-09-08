@@ -1,0 +1,56 @@
+CREATE VIEW hospitalAdd AS
+					SELECT
+                         blood_id, 
+                         blood_component,
+                         SUM(blood_amount),
+                         hospital_name
+                         
+				   FROM  blood_request_transac,
+                         blood_component,
+                         hospital_info
+                         
+					WHERE  blood_request_transac.blood_id =blood_component.blood_component_id AND 
+						   blood_request_transac.hospital_id =hospital_info.hospital_id AND 
+                           blood_request_transac.request_status='Accepted' 
+                           
+					GROUP BY blood_component;
+       
+
+
+
+
+
+CREATE VIEW hospitalStock AS
+					SELECT hospitalDis.blood_component,
+                         (SUM(hospitalAdd.blood_amount)-SUM(amount_of_blood)) as amount,
+                         hospital_name
+                         
+				   FROM  
+                        hospitalDis,
+                        hospitalAdd
+                         
+					WHERE  hospitalDis.hospital_name=hospitalAdd.hospital_name
+                           
+                           
+					GROUP BY blood_component;         
+
+
+
+
+CREATE VIEW matenda AS
+					SELECT
+                         SUM(patient_blood_distribution.amount_of_blood) as bloodamount, 
+                         blood_component.blood_component,                        
+                         patient_blood_distribution.hospital_id,
+                         diseases.disease_name
+                         
+				   FROM  patient_blood_distribution,
+                         blood_component,
+                         hospital_info,
+                         diseases
+                         
+					WHERE  patient_blood_distribution.blood_id =blood_component.blood_component_id AND 
+						   patient_blood_distribution.hospital_id =hospital_info.hospital_id AND 
+                         patient_blood_distribution.disease_id=diseases.disease_id 
+                           
+					GROUP BY blood_component;         
